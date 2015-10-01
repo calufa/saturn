@@ -28,7 +28,7 @@ import saturn.utils.DownloadByteResult;
 
 
 
-public class Scraper {
+public class Scrape {
 
 
 
