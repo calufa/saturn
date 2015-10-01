@@ -1,0 +1,4 @@
+.DS_Store
+/core/bin/
+/core/build/
+www.*
