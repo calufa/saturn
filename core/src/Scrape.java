@@ -68,7 +68,11 @@ public class Scrape {
 		if(downloadedURLsDirectoryPath == null){
 			downloadedURLsDirectory = new File(Globals.SERVICE_DIRECTORY + "/" + Prepare.baseDomain);
 		}else{
+			
+			downloadedURLsDirectoryPath = downloadedURLsDirectoryPath.replaceAll("~", System.getProperty("user.home"));
+			
 			downloadedURLsDirectory = new File(downloadedURLsDirectoryPath);
+			
 		}
 
 		if(cookies != null){
