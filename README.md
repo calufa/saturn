@@ -1,5 +1,11 @@
 # saturn
 
+#### Requirements
+
+java 6+
+
+#### Install instructions
+
 ```
 cd ~
 ```
