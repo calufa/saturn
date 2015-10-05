@@ -2,7 +2,7 @@
 
 #### Requirements
 
-Java 6 +
+- Java 6 +
 
 #### Install instructions
 
