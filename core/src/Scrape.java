@@ -1,10 +1,4 @@
-
-
-
-
-
 import java.io.File;
-import java.net.URL;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -12,9 +6,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.PosixParser;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.jsoup.Jsoup;
@@ -34,37 +25,32 @@ public class Scrape {
 
 
 	private static int threads;
-	private static String domain;
-	private static File foundURLsHashesFile;
-	private static File ignoreRulesFile;
-	private static File initListFile;
 	private static File downloadedURLsDirectory;
+	private static String cookies;
 	private static ConcurrentHashMap<String, String> pendingURLs = new ConcurrentHashMap<String, String>();
 	private static CopyOnWriteArrayList<String> downloadedHashes = new CopyOnWriteArrayList<String>();
 
 
 
 
-	public static void main(String[] args){
+	public static void main(String[] args) throws Exception{
 
-		try{
+		CommandLine commandLine = Prepare.parseArguments(args);
 
-			prepare(args);
+		Prepare.configFiles(commandLine);
 
-			cacheFoundURLsHashes();
+		prepareScraper(commandLine);
 
-			System.out.println("foundURLs: " + pendingURLs.size());
+		cacheFoundURLsHashes();
 
-			for(int i = 0; i < threads; i++){
-				new Thread(new Worker()).start();
-			}
+		System.out.println("\n>> foundURLs: " + pendingURLs.size() + "\n");
 
-			while(pendingURLs.size() > 0){
-				Thread.sleep(250);
-			}
+		for(int i = 0; i < threads; i++){
+			new Thread(new Worker()).start();
+		}
 
-		}catch(Exception e){
-			e.printStackTrace();
+		while(pendingURLs.size() > 0){
+			Thread.sleep(250);
 		}
 
 	}
@@ -72,41 +58,37 @@ public class Scrape {
 
 
 
-	private static void prepare(String[] args) throws Exception{
+	private static void prepareScraper(CommandLine cmd) throws Exception{
 
-		Options options = new Options();
-		options.addOption("domain", true, "domain");
-		options.addOption("threads", true, "threads");
-		options.addOption("clearCache", true, "clearCache");
-
-		CommandLineParser parser = new PosixParser();
-		CommandLine cmd = parser.parse(options, args, true);
-
-		domain = cmd.getOptionValue("domain");
 		threads = Integer.parseInt(cmd.getOptionValue("threads"));
 		boolean clearCache = Boolean.parseBoolean(cmd.getOptionValue("clearCache"));
-		
-		System.out.println("URL: " + domain);
-		System.out.println("threads: " + threads);
-		System.out.println("domain: " + domain);
-		System.out.println("clearCache: " + clearCache);
+		String downloadedURLsDirectoryPath = cmd.getOptionValue("downloadedURLsDirectory");
+		cookies = cmd.getOptionValue("cookies");
 
-		String baseDomain = new URL(domain).getAuthority();
+		if(downloadedURLsDirectoryPath == null){
+			downloadedURLsDirectory = new File(Globals.SERVICE_DIRECTORY + "/" + Prepare.baseDomain);
+		}else{
+			downloadedURLsDirectory = new File(downloadedURLsDirectoryPath);
+		}
 
-		foundURLsHashesFile = new File(Globals.SERVICE_DIRECTORY + "/" + baseDomain + ".txt");
-		ignoreRulesFile = new File(Globals.SERVICE_DIRECTORY + "/" + baseDomain + "-ignoreRules.txt");
-		initListFile = new File(Globals.SERVICE_DIRECTORY + "/" + baseDomain + "-initList.txt");
-		downloadedURLsDirectory = new File(Globals.SERVICE_DIRECTORY + "/" + baseDomain);
-		
+		if(cookies != null){
+			cookies = cookies.replaceAll("'", "");
+		}
+
 		if(clearCache){
-			
-			foundURLsHashesFile.delete();
-			System.out.println("<< deleted: " + foundURLsHashesFile);
-			
+
+			Prepare.foundURLsHashesFile.delete();
+			System.out.println("<< deleted: " + Prepare.foundURLsHashesFile);
+
 			downloadedURLsDirectory.delete();
 			System.out.println("<< deleted: " + downloadedURLsDirectory);
-			
+
 		}
+		
+		System.out.println("threads: " + threads);
+		System.out.println("clearCache: " + clearCache);
+		System.out.println("downloadedURLsDirectoryPath: " + downloadedURLsDirectoryPath);
+		System.out.println("cookies: " + cookies);
 
 	}
 
@@ -115,9 +97,9 @@ public class Scrape {
 
 	private static void cacheFoundURLsHashes() throws Exception{
 
-		if(foundURLsHashesFile.exists()){
+		if(Prepare.foundURLsHashesFile.exists()){
 
-			String[] lines = FileUtils.readFileToString(foundURLsHashesFile).split("\n");
+			String[] lines = FileUtils.readFileToString(Prepare.foundURLsHashesFile).split("\n");
 
 			for(int i = 0; i < lines.length; i++){
 
@@ -133,10 +115,10 @@ public class Scrape {
 			}
 
 		}
-		
-		if(initListFile.exists()){
-			
-			String[] lines = FileUtils.readFileToString(initListFile).split("\n");
+
+		if(Prepare.initListFile.exists()){
+
+			String[] lines = FileUtils.readFileToString(Prepare.initListFile).split("\n");
 
 			for(int i = 0; i < lines.length; i++){
 
@@ -144,7 +126,7 @@ public class Scrape {
 
 					String url = lines[i].split(" ")[0];
 					String hash = getHash(url);
-					
+
 					System.out.println("initList: " + url);
 
 					pendingURLs.put(hash, url);
@@ -152,10 +134,10 @@ public class Scrape {
 				}
 
 			}
-			
+
 		}
-		
-		pendingURLs.put(getHash(domain), domain);
+
+		pendingURLs.put(getHash(Prepare.domain), Prepare.domain);
 
 	}
 
@@ -172,7 +154,7 @@ public class Scrape {
 
 			String line = hash + " " + url + "\n";
 
-			FileUtils.writeStringToFile(foundURLsHashesFile, line, true);
+			FileUtils.writeStringToFile(Prepare.foundURLsHashesFile, line, true);
 
 		}
 
@@ -201,11 +183,11 @@ public class Scrape {
 
 	private static String[] getIgnoreRules() throws Exception{
 
-		if(!ignoreRulesFile.exists()){
-			FileUtils.writeStringToFile(ignoreRulesFile, "");
+		if(!Prepare.ignoreRulesFile.exists()){
+			FileUtils.writeStringToFile(Prepare.ignoreRulesFile, "");
 		}
 
-		return FileUtils.readFileToString(ignoreRulesFile).split("\n");
+		return FileUtils.readFileToString(Prepare.ignoreRulesFile).split("\n");
 
 	}
 
@@ -219,7 +201,7 @@ public class Scrape {
 			Entry<String, String> entry = pendingURLs.entrySet().iterator().next();
 
 			pendingURLs.remove(entry.getKey());
-			
+
 			downloadedHashes.add(entry.getKey());
 
 			return entry.getValue();
@@ -265,7 +247,7 @@ public class Scrape {
 
 						if(!file.exists()){
 
-							DownloadByteResult download = new Download().getURLBytes(url);
+							DownloadByteResult download = new Download().getURLBytesWithCookieAndPost(url, cookies, null);
 
 							FileUtils.writeByteArrayToFile(file, download.bytes);
 
@@ -335,10 +317,10 @@ public class Scrape {
 				String url = element.attr("href");
 
 				if(url.startsWith("/")){
-					url = domain + url;
+					url = Prepare.domain + url;
 				}
 
-				if(url.contains(domain) && isValid(url)){
+				if(url.contains(Prepare.domain) && isValid(url)){
 					addFoundURL(url);
 				}
 
