@@ -12,15 +12,15 @@ java -cp ~/saturn/core/dist/saturn.jar Scrape
 							--threads=10
 ```
 
-### advanced
+### Advanced
 ```
 java -cp ~/saturn/core/dist/saturn.jar Scrape 
               --domain='http://www.techcrunch.com'
               --threads=10
               --clearCache=true
-              --downloadedURLsDirectory=
-              --initListFilePath=
-              --ignoreRulesFilePath
-              --foundURLsHashesFilePath
-              --cookies
+              --downloadedURLsDirectory=~/saturn/www.techcrunch.com
+              --initListFilePath=~/saturn/www.techcrunch.com-initList.txt
+              --ignoreRulesFilePath=~/saturn/www.techcrunch.com-ignoreRules.txt
+              --foundURLsHashesFilePath=~/saturn/www.techcrunch.com.txt
+              --cookies=null
 ```
