@@ -8,8 +8,8 @@ git clone git@github.com:calufa/saturn.git
 ```
 ```
 java -cp ~/saturn/core/dist/saturn.jar Scrape 
-							--domain='http://www.techcrunch.com'
-							--threads=10
+		--domain='http://www.techcrunch.com'
+		--threads=10
 ```
 
 #### Advanced
