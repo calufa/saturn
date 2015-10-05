@@ -12,7 +12,7 @@ java -cp ~/saturn/core/dist/saturn.jar Scrape
 							--threads=10
 ```
 
-### Advanced
+#### Advanced
 ```
 java -cp ~/saturn/core/dist/saturn.jar Scrape 
               --domain='http://www.techcrunch.com'
