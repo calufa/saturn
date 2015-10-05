@@ -69,19 +69,32 @@ public class Prepare {
 		if(initListFilePath == null){
 			initListFile = new File(Globals.SERVICE_DIRECTORY + "/" + baseDomain + "-initList.txt");
 		}else{
+			
+			initListFilePath = initListFilePath.replaceAll("~", System.getProperty("user.home"));
+			
 			initListFile = new File(initListFilePath);
+			
 		}
 
 		if(ignoreRulesFilePath == null){
 			ignoreRulesFile = new File(Globals.SERVICE_DIRECTORY + "/" + baseDomain + "-ignoreRules.txt");
 		}else{
+			
+			ignoreRulesFilePath = ignoreRulesFilePath.replaceAll("~", System.getProperty("user.home"));
+			
 			ignoreRulesFile = new File(ignoreRulesFilePath);
+			
+			
 		}
 
 		if(foundURLsHashesFilePath == null){
 			foundURLsHashesFile = new File(Globals.SERVICE_DIRECTORY + "/" + baseDomain + ".txt");
 		}else{
+			
+			foundURLsHashesFilePath = foundURLsHashesFilePath.replaceAll("~", System.getProperty("user.home"));
+			
 			foundURLsHashesFile = new File(foundURLsHashesFilePath);
+			
 		}
 		
 		initListFile.createNewFile();
