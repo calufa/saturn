@@ -1,7 +1,11 @@
 # saturn
 
-- cd ~
-- git clone git@github.com:calufa/saturn.git
+```
+cd ~
+```
+```
+git clone git@github.com:calufa/saturn.git
+```
 ```
 java -cp ~/saturn/core/dist/saturn.jar Scrape 
 							--domain='http://www.techcrunch.com'
