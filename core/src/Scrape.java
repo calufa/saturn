@@ -247,21 +247,15 @@ public class Scrape {
 
 						File file = new File(downloadedURLsDirectory.getAbsoluteFile() + "/" + hash);
 
-						byte[] bytes;
-
 						if(!file.exists()){
 
 							DownloadByteResult download = new Download().getURLBytesWithCookieAndPost(url, cookies, null);
 
 							FileUtils.writeByteArrayToFile(file, download.bytes);
+							
+							extractLinks(download.bytes);
 
-							bytes = download.bytes;
-
-						}else{
-							bytes = FileUtils.readFileToByteArray(file);
 						}
-
-						extractLinks(bytes);
 
 					}else{
 						System.err.println("ignoring: " + url);
