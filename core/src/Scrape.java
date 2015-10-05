@@ -241,7 +241,7 @@ public class Scrape {
 
 					if(isValid(url)){
 
-						System.out.println("pending: " + pendingURLs.size() + " - " + url);
+						System.out.println(Prepare.baseDomain + " -pending: " + pendingURLs.size() + " - " + url);
 
 						String hash = getHash(url);
 

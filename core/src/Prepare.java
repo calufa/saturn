@@ -5,6 +5,7 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
+import org.apache.commons.io.FileUtils;
 
 import saturn.config.Globals;
 
@@ -97,9 +98,17 @@ public class Prepare {
 			
 		}
 		
-		initListFile.createNewFile();
-		ignoreRulesFile.createNewFile();
-		foundURLsHashesFile.createNewFile();
+		if(!initListFile.exists()){
+			FileUtils.writeStringToFile(initListFile, "");
+		}
+		
+		if(!ignoreRulesFile.exists()){
+			FileUtils.writeStringToFile(ignoreRulesFile, "");
+		}
+		
+		if(!foundURLsHashesFile.exists()){
+			FileUtils.writeStringToFile(foundURLsHashesFile, "");
+		}
 		
 		System.out.println("initListFilePath: " + initListFile);
 		System.out.println("ignoreRulesFilePath: " + ignoreRulesFile);
