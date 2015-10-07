@@ -250,7 +250,7 @@ public class Scrape {
 						if(!file.exists()){
 
 							DownloadByteResult download = new Download().getURLBytesWithCookieAndPost(url, cookies, null);
-
+							
 							FileUtils.writeByteArrayToFile(file, download.bytes);
 							
 							extractLinks(download.bytes);
